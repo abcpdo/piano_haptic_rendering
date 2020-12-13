@@ -18,7 +18,7 @@ tension_force = 0.01; %N
 dt = 0.00005; % time step at 20khz
 time = 10; % seconds
 duration = time/dt;  %get number of loop cycles
-
+ip = getip;
 
 % Create objects from each model class
 Finger = finger_model(finger_mass,0,0,0);
@@ -30,7 +30,7 @@ Brake = brake_model(brake_ramp,brake_delay);
 User = force_input(25,0,1.9,dt);  %P,I,D
 Keybed = hits_keybed(0.1);
 %Joy = vrjoystick(1);
-device = serialport("COM2",9600);
+Client = tcpclient(ip,1234);
 
 % Initialize all variables
 F_user = 0;
