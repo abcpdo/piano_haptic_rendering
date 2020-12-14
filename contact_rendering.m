@@ -12,31 +12,27 @@ classdef contact_rendering < handle
    methods
       function obj = contact_rendering(threshold,max_velocity, duration)
           obj.thresh = threshold; 
-          obj.vel = 0;
           obj.max_vel = max_velocity;
-          obj.pos_prev = 0;
           obj.count = 0;
           obj.amplitude = 0;
           obj.dur = duration;
           obj.trigger = false;
       end
-      function V_lra = step(obj,Pos_tip,dt)
-          obj.vel = (Pos_tip - obj.pos_prev)/dt;
-          if(obj.vel < -0.001 && abs(Pos_tip) < obj.thresh)
-            obj.amplitude = min(abs(obj.vel),obj.max_vel)/obj.max_vel;
+      function V_lra = step(obj,Vel_tip,Pos_tip,dt)
+          if(~obj.trigger && Vel_tip < -0.001 && abs(Pos_tip) < obj.thresh)  
             obj.trigger = true;
+            obj.amplitude = min(abs(obj.vel),obj.max_vel)/obj.max_vel;
           end
-          if(obj.trigger && obj.count < obj.dur/dt)
+          if(obj.trigger && obj.count <= obj.dur/dt)
               obj.count = obj.count + 1;
               V_lra = obj.amplitude;
-          elseif(obj.count > obj.dur/dt)
+          elseif(obj.count > obj.dur/dt)  %exceeded active duration
               V_lra = 0;
               obj.count = 0;
               obj.trigger = false;
           else
               V_lra = 0;
-          end
-          obj.pos_prev = Pos_tip;        
+          end     
       end
    end
 end

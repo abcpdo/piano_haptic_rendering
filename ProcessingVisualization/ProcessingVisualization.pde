@@ -1,17 +1,34 @@
 import processing.net.*;
 
 Server myServer;
+Client thisClient;
 int val = 0;
+String PosKey;
+String PosTip;
+float Key;
+float Tip;
 
 void setup()  {
-  size(400, 400);
-  background(0);
+  size(600, 600);
+  stroke(127,34,255);     //stroke color
+  strokeWeight(1);        //stroke width
   // Starts a myServer on port 1234
   myServer = new Server(this, 1234); 
 }
 
 void draw() {
-  Client thisClient = myServer.avaliable();
+  thisClient = myServer.available();  
   if (thisClient != null){
-  
+    background(0);
+    PosKey = thisClient.readStringUntil(' ');
+    PosTip = thisClient.readStringUntil('\n');
+    if (PosKey != null){
+      Key = float(PosKey);
+      Tip = float(PosTip);
+    }
+    Key = map(Key,0.04,-0.04,0,600);
+    Tip = map(Tip,0.04,-0.04,0,600);
+    ellipse(200,Tip,5,5);
+    line(200,Key,600,300);
+  }
 }
