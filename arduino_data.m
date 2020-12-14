@@ -1,19 +1,19 @@
 classdef arduino_data < handle
    properties (SetAccess = private)
-       force_m double
-       torque_m double
-       fsr_reading double
-       force double
-       status_sol int
-       status_lra int
-       x int
-       y int
-       q queue
-		 int pwmPin1 = 5; % motor
-		 int dirPin1 = 8;
-		 int pwmPin2 = 6; % solenoid
-		 int dirPin2 = 7; 
-		 int aPinFSR = 0; % FSR connected to A0 port
+   	force_m double
+       	torque_m double
+       	fsr_reading double
+       	force double
+       	status_sol int
+       	status_lra int
+       	x int
+       	y int
+       	q queue
+	int pwmPin1 = 5; % motor
+	int dirPin1 = 8;
+	int pwmPin2 = 6; % solenoid
+	int dirPin2 = 7; 
+	int aPinFSR = 0; % FSR connected to A0 port
 		 
    end
    % get arduino
