@@ -56,7 +56,7 @@ ColorOrder  = lines(size(Output,1));
 tic  
 init_time = clock;
 for i = 1:duration 
-    target_pos = -axis(Joy,2)*0.05; %target position from joystick: 3cm above and below
+    target_pos = -axis(Joy,2)*0.03; %target position from joystick: 3cm above and below
     
     % New input for current step
     [F_user,Pos_target] = User.get_force(t,Pos_tip,Vel_tip,target_pos);
@@ -111,7 +111,7 @@ for i = 1:duration
            curr_time(6) = curr_time(6) + 60; 
         end
     end
-    if(mod(i,500) == 0)
+    if(mod(i,750) == 0)
         writeline(Client,string(Pos_key)+' '+string(Pos_tip));
     end
 end
