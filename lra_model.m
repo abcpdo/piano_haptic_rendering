@@ -16,7 +16,6 @@ classdef lra_model < handle
           if(V_lra > 0)
               if(obj.count > 0)
                 F_lra = V_lra*obj.a*sin(obj.count*dt*2*pi*obj.freq);
-                disp(F_lra);
               else
                 F_lra = 0; 
               end

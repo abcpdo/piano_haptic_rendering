@@ -17,10 +17,7 @@ classdef force_input < handle
          obj.past_errors = queue(50);
          obj.past_errors.enqueue(0);  %so at least one value is 0 
       end
-      function [force,target] = get_force(obj, t, Pos_tip, Vel_tip, input)
-%         desired_pos = eval(input);  %target position of finger tip
-        desired_pos = sin(5*t)*0.1-0.02;
-        
+      function [force,target] = get_force(obj, t, Pos_tip, Vel_tip, desired_pos)
         
         current_error = desired_pos - Pos_tip;  %error
         

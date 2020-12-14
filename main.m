@@ -2,7 +2,6 @@ close all; clc
 % This is the main file for the simulation
 
 % Set constants
-target_pos = 'sin(5*t)*0.1-0.02'; %this is the input position
 key_travel = 0.02; %m how far the key can depress 
 finger_mass = 0.1; %kg  guessed mass of finger 
 piano_mass = 0.05; %kg
@@ -30,10 +29,11 @@ Motor = motor_model(9,9,9);
 Brake = brake_model(brake_ramp,brake_delay);
 User = force_input(25,0,1.9,dt);  %P,I,D
 Keybed = hits_keybed(0.1);
-%Joy = vrjoystick(1);
+Joy = vrjoystick(1);
 Client = tcpclient(ip,1234);
 
 % Initialize all variables
+target_pos = 0; %this is the input position
 F_user = 0;
 F_tip = 0;
 Pos_tip = 0;
@@ -49,13 +49,15 @@ F_wire = 0;
 F_lra = 0;
 t = 0.0;
              %[t; F_user; F_key; Pos_key; F_out; V_lra; F_lra; F_motor; F_brake; F_wire; Pos_tip; Pos_target; Vel_tip; F_tip; Signal_brake];
-Selection =   [1     0      0      1       0      1      1        0        0        0        1        0          0       0          0     ];
+Selection =   [1     0      0      1       0      0      0        0        0        0        1        1          0       0          0     ];
 Output = zeros(nnz(Selection),duration);   %plotting vectors
 ColorOrder  = lines(size(Output,1));
 
 tic  
 init_time = clock;
-for i = 1:duration   
+for i = 1:duration 
+    target_pos = -axis(Joy,2)*0.05; %target position from joystick: 3cm above and below
+    
     % New input for current step
     [F_user,Pos_target] = User.get_force(t,Pos_tip,Vel_tip,target_pos);
  
@@ -70,7 +72,7 @@ for i = 1:duration
     V_lra = Contact.step(Vel_tip,Pos_tip,dt);
 
     % Physical componennts previous step
-    F_lra = LRA.step(V_lra,dt);
+    F_lra = 0; %LRA.step(V_lra,dt);
     F_motor = Motor.step(F_motor,F_out,dt);
     F_brake = Brake.step(Signal_brake,F_user,piano_stiffness,key_travel,dt);
     F_wire = ternary(Signal_brake,F_brake,F_motor);

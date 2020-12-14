@@ -21,11 +21,11 @@ classdef contact_rendering < handle
       function V_lra = step(obj,Vel_tip,Pos_tip,dt)
           if(~obj.trigger && Vel_tip < -0.001 && abs(Pos_tip) < obj.thresh)  
             obj.trigger = true;
-            obj.amplitude = min(abs(obj.vel),obj.max_vel)/obj.max_vel;
+            obj.amplitude = abs(min(abs(obj.vel),obj.max_vel)/obj.max_vel);
           end
           if(obj.trigger && obj.count <= obj.dur/dt)
               obj.count = obj.count + 1;
-              V_lra = obj.amplitude;
+              V_lra = 0; %obj.amplitude;    ????????????? MYSTERY
           elseif(obj.count > obj.dur/dt)  %exceeded active duration
               V_lra = 0;
               obj.count = 0;
