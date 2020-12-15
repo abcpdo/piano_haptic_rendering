@@ -134,7 +134,9 @@ void loop()
   //*************************************************************
   if (Serial.available() > 0){
     Tp = Serial.read();
-    force = (Tp * rs) / (rh * rp);
+    if (Tp != null){
+      force = (Tp * rs) / (rh * rp);
+    }
   }
   
   // Determine correct direction for motor torque
