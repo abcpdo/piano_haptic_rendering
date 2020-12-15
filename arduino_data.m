@@ -26,14 +26,12 @@ classdef arduino_data < handle
 
 
    methods
-   	function obj = arduino_data(pwmSol,motor_torque)
+   	function obj = arduino_data()
 	   % get arduino
   	 	a = arduino('/dev/cu.usbserial-AL03G1P2','uno')
 		configurePin(a,pwmPin2,'DigitalOutput');
 		configurePin(a,dirPin2,'DigitalOutput');
 		s = serial('/dev/cu.usbserial-AL03G1P2','uno')
-		obj.p = pwmSol;
-		obj.T = F_motor_out;
         obj.pwmPin1 = 5;
         obj.dirPin1 = 8;
         obj.pwmPin2 = 6; % solenoid
@@ -55,7 +53,7 @@ classdef arduino_data < handle
 	end
     function solenoidOn(obj) % 225 - on, 0 - off
           % function to turn solenoid on
-		writeDigitalPin(a,dirPin2,obj.p);
+		writeDigitalPin(a,dirPin2,225);
     end	
   	function solenoidOff(obj)
 	% function to turn solenoid off
@@ -70,7 +68,7 @@ classdef arduino_data < handle
 %              %LRA off
 %          end
 %      	end
-    function motorTorque(obj)
+    function motorTorque(force)
           % function to control the motor
 	  % send force to serial
 	  write(s,obj.T,"double");
