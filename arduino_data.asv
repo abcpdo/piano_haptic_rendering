@@ -59,9 +59,9 @@ classdef arduino_data < handle
           } else {
             digitalWrite(dirPin, LOW);
           }
-      %Compute the duty cycle required to generate Tp (torque at the motor pulley)
+      // Compute the duty cycle required to generate Tp (torque at the motor pulley)
           duty = sqrt(abs(Tp)/0.0183);
-      %Make sure the duty cycle is between 0 and 100%
+      // Make sure the duty cycle is between 0 and 100%
           if (duty > 1) {
           duty = 1;
           } else if (duty < 0) {
@@ -100,7 +100,6 @@ classdef arduino_data < handle
             }
             TCCR2B = TCCR2B & 0b11111000 | mode;
             }
-               end
       end
    end
 end
