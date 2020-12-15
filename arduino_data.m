@@ -4,60 +4,59 @@ classdef arduino_data < handle
     torque_m double
     fsr_reading double
     force double
-    status_sol int
-    status_lra int
-    pwmSol int
     p double
     T double
-    y int
     q queue
     a arduino
-    s serial
-	pwmPin1 int  % motor
-	dirPin1 int 
-	pwmPin2 int  % solenoid
-	dirPin2 int  
-	aPinFSR int  % FSR connected to A0 port 
+    %s serial
+    s string
+	pwmPin1 string  % motor
+	dirPin1 string 
+	pwmPin2 string  % solenoid
+	dirPin2 string  
+	aPinFSR string  % FSR connected to A0 port 
 	rh double
 	rp double
 	rs double
 	xh double
+    baud double
    end
 
 
    methods
-   	function obj = arduino_data()
+   	function obj = arduino_data(pwmSol,Torque)
 	   % get arduino
-  	 	a = arduino('/dev/cu.usbserial-AL03G1P2','uno')
-		configurePin(a,pwmPin2,'DigitalOutput');
-		configurePin(a,dirPin2,'DigitalOutput');
-		s = serial('/dev/cu.usbserial-AL03G1P2','uno')
-        obj.pwmPin1 = 5;
-        obj.dirPin1 = 8;
-        obj.pwmPin2 = 6; % solenoid
-        obj.dirPin2 = 7; 
-        obj.aPinFSR = 0; % FSR connected to A0 port 
-        rh = 0.8654;	//[m]
-    	rp = 0.0486;   //[m]
-    	rs = 0.7443;   //[m]
+        % baud = 9600;
+  	 	obj.a = arduino('/dev/cu.usbserial-AL03G1P2','Uno');
+        ports = serialportlist();
+		obj.s = device(obj.a,'SerialPort',ports(3));
+        obj.pwmPin1 = 'D5';
+        obj.dirPin1 = 'D8';
+        obj.pwmPin2 = 'D6'; % solenoid
+        obj.dirPin2 = 'D7'; 
+        obj.aPinFSR = 'A0'; % FSR connected to A0 port 
+        obj.p = pwmSol;
+        obj.T = Torque;
 	
-	fopen(s);
+		configurePin(obj.a,obj.pwmPin2,'DigitalOutput');
+		configurePin(obj.a,obj.dirPin2,'DigitalOutput');
+	fopen(obj.s);
     end
     function fsr_reading = force_sensor()
          %function return force on the key sensor
-        fsr_reading = readAnalogPin(aPinFSR);
+        fsr_reading = readAnalogPin(obj.aPinFSR);
     end
-    function xh = handle_position(obj)
+    function xh = handle_position()
 	% get position from serial
-	xh = fscanf(s);
+	xh = fscanf(obj.s); %fread()?
 	end
     function solenoidOn(obj) % 225 - on, 0 - off
           % function to turn solenoid on
-		writeDigitalPin(a,dirPin2,225);
+		writeDigitalPin(obj.a,obj.dirPin2,obj.p);
     end	
   	function solenoidOff(obj)
 	% function to turn solenoid off
-    		writeDigitalPin(a,dirPin2,0);
+    		writeDigitalPin(obj.a,obj.dirPin2,0);
 	end
 
 %      function status_lra = LRA_status(y)
@@ -68,12 +67,12 @@ classdef arduino_data < handle
 %              %LRA off
 %          end
 %      	end
-    function motorTorque(force)
+    function motorTorque(obj)
           % function to control the motor
 	  % send force to serial
-	  write(s,obj.T,"double");
+	  write(obj.s,obj.T,"double");
     end
+    fend(s);
    end
 end
-
 
