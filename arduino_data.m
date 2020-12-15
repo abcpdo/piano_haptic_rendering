@@ -8,8 +8,6 @@ classdef arduino_data < handle
     T double
     q queue
     a arduino
-    %s Serial
-    s string
 	pwmPin1 string  % motor
 	dirPin1 string 
 	pwmPin2 string  % solenoid
@@ -24,7 +22,7 @@ classdef arduino_data < handle
 
 
    methods
-   	function obj = arduino_data(pwmSol,Torque)
+   	function obj = arduino_data(nothing)
 	   % get arduino
         % baud = 9600;
   	 	obj.a = arduino('/dev/cu.usbserial-AL03G1P2','Uno'); 
@@ -40,8 +38,8 @@ classdef arduino_data < handle
 		configurePin(obj.a,obj.dirPin2,'DigitalOutput');
 	fopen(s);
     end
-    function s = set_serial(ser)
-        s = ser;
+    function s = set_serial(sp,num)
+        write(sp,num,'uint8');
     end
         
     function fsr_reading = force_sensor()
