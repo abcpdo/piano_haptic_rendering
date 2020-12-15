@@ -61,7 +61,12 @@ F_wire = 0;
 F_lra = 0;
 t = 0.0;
 torque = F_out*hapkit_ratio;
+ports = serialportlist();
+s = serialport(ports(3),9600);
 myArduino = arduino_data(225,torque);
+set_serial(s);
+
+
 
              %[t; F_user; F_key; Pos_key; F_out; V_lra; F_lra; F_motor; Pos_tip; Vel_tip; F_tip; Signal_brake];
 Selection =   [1     1      0      1       0      0      0        1         1       0       0          0     ];
