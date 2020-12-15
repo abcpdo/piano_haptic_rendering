@@ -42,6 +42,7 @@ User = force_input(25,0,1.9,dt);  %P,I,D
 Keybed = hits_keybed(brake_threshold);
 Joy = vrjoystick(1);
 Client = tcpclient(ip,1234);
+myArduino = arduino_data(Signal_Brake,F_motor);
 
 % Initialize all variables
 target_pos = 0; %this is the input position
@@ -86,6 +87,11 @@ for i = 1:duration
     F_motor = Motor.step(F_motor,F_out,dt);
     F_brake = Brake.step(Signal_brake,F_user,dt);
     F_wire = ternary(Signal_brake,F_brake,F_motor);
+    
+    % Arduino setup
+    myArduino.motor_force();
+    myArduino.solenoid_status();
+    fsr = myArduino.force_sensor();
     
     % Finger current step
     [Pos_tip,Vel_tip,F_tip] = Finger.step(F_wire, F_lra, F_user,Signal_brake,dt);
