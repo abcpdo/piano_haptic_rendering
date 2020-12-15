@@ -31,7 +31,7 @@ classdef arduino_data < handle
   		%Serial.print("Analog reading = ");
   		%Serial.println(fsrReading);
       	end
-      	function status_sol = solenoid_status(obj) % 225 - on, 0 - off
+      	function solenoid_status(obj) % 225 - on, 0 - off
           % function to turn arduino solenoid on/off
 		writeDigitalPin(a,dirPin2,obj.p)
 		delay(3000);
@@ -45,7 +45,7 @@ classdef arduino_data < handle
 %              %LRA off
 %          end
 %      	end
-      	function force_m = motor_force(obj)
+      	function motor_force(obj)
           % function to control the motor
           force_m = obj.F;
           Tp = (force_m*rh*rp)/rs;
