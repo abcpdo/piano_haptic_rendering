@@ -6,7 +6,7 @@ classdef arduino_data < handle
        	force double
        	status_sol int
        	status_lra int
-       	x int
+       	pwmSol int
        	y int
        	q queue
 	int pwmPin1 = 5; % motor
@@ -20,21 +20,23 @@ classdef arduino_data < handle
    a = arduino('/dev/cu.usbserial-AL03G1P2','uno')
 	configurePin(a,pwmPin2,'DigitalOutput');
 	configurePin(a,dirPin2,'DigitalOutput');
-
-	
    methods
-      function fsr_reading = force_sensor()
+   	function obj = arduino_data(pwmSol,F_motor_out)
+		obj.p = pwmSol;
+		obj.F = F_motor_out;
+	
+      	function fsr_reading = force_sensor()
           %function return force on the key sensor
-			fsr_reading = readAnalogPin(aPinFSR);
-  			%Serial.print("Analog reading = ");
-  			%Serial.println(fsrReading);
-      end
-      function status_sol = solenoid_status(x) % 225 - on, 0 - off
+		fsr_reading = readAnalogPin(aPinFSR);
+  		%Serial.print("Analog reading = ");
+  		%Serial.println(fsrReading);
+      	end
+      	function status_sol = solenoid_status(obj) % 225 - on, 0 - off
           % function to turn arduino solenoid on/off
-			 	writeDigitalPin(a,dirPin2,x)
-				delay(3000);
-				analogWrite(pwmPin,0); %  off posiion, only run once when key is pressed
-      end
+		writeDigitalPin(a,dirPin2,obj.p)
+		delay(3000);
+		analogWrite(pwmPin,0); %  off posiion, only run once when key is pressed
+      	end
 %      function status_lra = LRA_status(y)
 %          % function to turn arduino LRA  on/off
 %          if (y == 1)
@@ -42,10 +44,10 @@ classdef arduino_data < handle
 %          else
 %              %LRA off
 %          end
-      end
-      function force_m = motor_force(F_motor_out)
+%      	end
+      	function force_m = motor_force(obj)
           % function to control the motor
-          force_m = F_motor_out;
+          force_m = obj.F;
           Tp = (force_m*rh*rp)/rs;
           
           if(force_m > 0) {
