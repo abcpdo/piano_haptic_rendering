@@ -5,31 +5,41 @@ close all; clc
 load('G.mat');
 key_travel = 0.02; %m how far the key can depress 
 finger_mass = 0.1; %kg  guessed mass of finger 
-piano_mass = 0.05; %kg
-piano_stiffness = 30; %N/m
-piano_damping = 2; %Ns/m
+
+piano_mk = 0.06; %kg
+piano_mh = 0.01; %kg
+piano_k = 10; %N/m
+piano_b = 5; %Ns/m
+piano_l1 = 0.06; %m
+piano_l2 = 0.04; %m
+piano_l3 = 0.01; %m
+piano_l4 = 0.04; %m
+piano_l5 = 0.025; %m
+
+
 lra_freq = 230; %hz
 lra_duration = 0.02; %s
 lra_amplitude = 0.05; %N
 max_contact_velocity = 0.1; %m/s
 brake_ramp = 0.0001;
 brake_delay = 0.001;
+brake_threshold = 0.1; %N
 contact_stiffness = 1000; %N/m
 tension_force = 0.01; %N
 dt = 0.00005; % time step at 20khz
-time = 10; % seconds
+time = 5; % seconds
 duration = time/dt;  %get number of loop cycles
 ip = getip;
 
 % Create objects from each model class
 Finger = finger_model(finger_mass,0,0,0);
-Piano = piano_model(piano_mass,piano_stiffness,contact_stiffness,piano_damping,key_travel);
+Piano = piano_model(piano_mk,piano_mh,piano_k, piano_b, piano_l1, piano_l2, piano_l3, piano_l4, piano_l5, contact_stiffness,key_travel);
 LRA = lra_model(lra_freq,lra_amplitude,0.002);
 Contact = contact_rendering(0.0005,max_contact_velocity,lra_duration);
 Motor = motor_model(9,9,9);
 Brake = brake_model(brake_ramp,brake_delay);
 User = force_input(25,0,1.9,dt);  %P,I,D
-Keybed = hits_keybed(0.1);
+Keybed = hits_keybed(brake_threshold);
 Joy = vrjoystick(1);
 Client = tcpclient(ip,1234);
 
@@ -50,7 +60,7 @@ F_wire = 0;
 F_lra = 0;
 t = 0.0;
              %[t; F_user; F_key; Pos_key; F_out; V_lra; F_lra; F_motor; F_brake; F_wire; Pos_tip; Pos_target; Vel_tip; F_tip; Signal_brake];
-Selection =   [1     0      0      1       0      0      0        0        0        0        1        1          0       0          0     ];
+Selection =   [1     1      0      1       0      0      0        1        1        0        1        1          0       0          0     ];
 Output = zeros(nnz(Selection),duration);   %plotting vectors
 ColorOrder  = lines(size(Output,1));
 
@@ -58,11 +68,11 @@ tic
 init_time = clock;
 for i = 1:duration 
     % New input for current step
-    target_pos = -axis(Joy,2)*0.03+0.001; %target position from joystick: 3cm above and below
+    target_pos = -axis(Joy,2)*0.05+0.001; %target position from joystick: 3cm above and below
     [F_user,Pos_target] = User.get_force(t,Pos_tip,Vel_tip,target_pos);
  
     % Virtual rendering previous step
-    Signal_brake = Keybed.brake_state(Pos_key,Pos_tip,F_tip,F_user,piano_stiffness,key_travel,Signal_brake);
+    Signal_brake = Keybed.brake_state(Pos_key,Pos_tip,F_tip,F_user,key_travel,piano_mk,piano_mh,piano_k, piano_b, piano_l1, piano_l2, piano_l3, piano_l4, piano_l5,dt);
     [F_key, Pos_key] = Piano.step(Pos_tip,Signal_brake,dt);
     F_tension = tensioner(Pos_tip,tension_force);
     F_out = F_key + F_tension;
@@ -74,7 +84,7 @@ for i = 1:duration
     % Physical componennts previous step
     F_lra = 0; %LRA.step(V_lra,dt);
     F_motor = Motor.step(F_motor,F_out,dt);
-    F_brake = Brake.step(Signal_brake,F_user,piano_stiffness,key_travel,dt);
+    F_brake = Brake.step(Signal_brake,F_user,dt);
     F_wire = ternary(Signal_brake,F_brake,F_motor);
     
     % Finger current step
