@@ -3,7 +3,7 @@ close all; clc
 
 % Set constants
 load('G.mat');
-hapkit_ratio = 0.07; %ratio converting MotorTorque = ratio*Force
+hapkit_ratio = 6.08; %ratio converting MotorTorque = ratio*Force
 
 key_travel = 0.02; %m how far the key can depress 
 
