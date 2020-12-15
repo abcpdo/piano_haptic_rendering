@@ -44,7 +44,7 @@ double dxh_filt_prev2;
 double Tp = 0;                    // Torque of the motor pulley
 double duty = 0;                  // Duty cylce (between 0 and 255)
 unsigned int output = 0;          // Output command to the motor
-
+double force;
 // --------------------------------------------------------------
 // Setup function
 // --------------------------------------------------------------
@@ -134,9 +134,7 @@ void loop()
   //*************************************************************
   if (Serial.available() > 0){
     Tp = Serial.read();
-    if (Tp != null){
-      force = (Tp * rs) / (rh * rp);
-    }
+    force = (Tp * rs) / (rh * rp);
   }
   
   // Determine correct direction for motor torque
