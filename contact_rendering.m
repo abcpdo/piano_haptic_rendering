@@ -21,7 +21,7 @@ classdef contact_rendering < handle
       function V_lra = step(obj,Vel_tip,Pos_tip,z,dt)
           if(~obj.trigger && Vel_tip < -0.001 && abs(Pos_tip) < obj.thresh)  
             obj.trigger = true;
-            sound(z);  %play sound
+            %sound(z);  %play sound
             obj.amplitude = abs(min(abs(obj.vel),obj.max_vel)/obj.max_vel);
           end
           if(obj.trigger && obj.count <= obj.dur/dt)
