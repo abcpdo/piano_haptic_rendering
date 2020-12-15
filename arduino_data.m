@@ -24,12 +24,13 @@ classdef arduino_data < handle
 	xh double
    end
 
-	configurePin(a,pwmPin2,'DigitalOutput');
-	configurePin(a,dirPin2,'DigitalOutput');
+
    methods
    	function obj = arduino_data(pwmSol,motor_torque)
 	   % get arduino
   	 	a = arduino('/dev/cu.usbserial-AL03G1P2','uno')
+		configurePin(a,pwmPin2,'DigitalOutput');
+		configurePin(a,dirPin2,'DigitalOutput');
 		s = serial('/dev/cu.usbserial-AL03G1P2','uno')
 		obj.p = pwmSol;
 		obj.T = F_motor_out;
