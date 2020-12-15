@@ -5,6 +5,7 @@ close all; clc
 load('G.mat');
 hapkit_ratio = 6.08; %ratio converting MotorTorque = ratio*Force
 
+
 key_travel = 0.02; %m how far the key can depress 
 
 piano_mk = 0.06; %kg
@@ -29,19 +30,19 @@ tension_force = 0.01; %N
 dt = 0.00005; % time step at 20khz
 time = 5; % seconds
 duration = time/dt;  %get number of loop cycles
-ip = getip;
+% ip = getip;
 
 % Create objects from each model class
-Finger = finger_model(finger_mass,0,0,0);
+%Finger = finger_model(finger_mass,0,0,0);
 Piano = piano_model(piano_mk,piano_mh,piano_k, piano_b, piano_l1, piano_l2, piano_l3, piano_l4, piano_l5, contact_stiffness,key_travel);
-LRA = lra_model(lra_freq,lra_amplitude,0.002);
+%LRA = lra_model(lra_freq,lra_amplitude,0.002);
 Contact = contact_rendering(0.0005,max_contact_velocity,lra_duration);
-Motor = motor_model(9,9,9);
-Brake = brake_model(brake_ramp,brake_delay);
+%Motor = motor_model(9,9,9);
+%Brake = brake_model(brake_ramp,brake_delay);
 User = force_input(25,0,1.9,dt);  %P,I,D
 Keybed = hits_keybed(brake_threshold);
-Client = tcpclient(ip,1234);
-myArduino = arduino_data(   ,   );
+% Client = tcpclient(ip,1234);
+
 
 % Initialize all variables
 F_user = 0;
@@ -59,6 +60,9 @@ Signal_brake = false;   %signal from 0 to 1
 F_wire = 0;
 F_lra = 0;
 t = 0.0;
+torque = F_out*hapkit_ratio;
+myArduino = arduino_data(225,torque);
+
              %[t; F_user; F_key; Pos_key; F_out; V_lra; F_lra; F_motor; Pos_tip; Vel_tip; F_tip; Signal_brake];
 Selection =   [1     1      0      1       0      0      0        1         1       0       0          0     ];
 Output = zeros(nnz(Selection),duration);   %plotting vectors
@@ -80,7 +84,7 @@ for i = 1:duration
 
     % Physical components 
     % Actuate LRA
-    myArduino.motorTorque(F_out*hapkit_ratio);
+    myArduino.motorTorque();
    
     if(Signal_brake)
         myArduino.solenoidOn();
