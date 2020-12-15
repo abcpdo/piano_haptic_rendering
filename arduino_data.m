@@ -38,7 +38,7 @@ classdef arduino_data < handle
         obj.pwmPin2 = 6; % solenoid
         obj.dirPin2 = 7; 
         obj.aPinFSR = 0; % FSR connected to A0 port 
-	rh = 0.8654;	//[m]
+        rh = 0.8654;	//[m]
     	rp = 0.0486;   //[m]
     	rs = 0.7443;   //[m]
 	
@@ -46,7 +46,7 @@ classdef arduino_data < handle
     end
     function fsr_reading = force_sensor()
          %function return force on the key sensor
-	fsr_reading = readAnalogPin(aPinFSR);
+        fsr_reading = readAnalogPin(aPinFSR);
     end
     function xh = handle_position(obj)
 	% get position from serial
@@ -56,7 +56,7 @@ classdef arduino_data < handle
           % function to turn solenoid on
 		writeDigitalPin(a,dirPin2,obj.p);
     end	
-    	function solenoidOff(obj)
+  	function solenoidOff(obj)
 	% function to turn solenoid off
     		writeDigitalPin(a,dirPin2,0);
 	end
@@ -73,6 +73,7 @@ classdef arduino_data < handle
           % function to control the motor
 	  % send force to serial
 	  write(s,obj.T,"double");
+    end
    end
 end
 
