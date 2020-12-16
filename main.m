@@ -27,7 +27,7 @@ brake_threshold = 0.1; %N
 contact_stiffness = 1000; %N/m
 tension_force = 0.01; %N
 dt = 0.00005; % time step at 20khz
-time = 5; % seconds
+time = 10; % seconds
 duration = time/dt;  %get number of loop cycles
 ip = getip;
 
@@ -42,7 +42,6 @@ User = force_input(25,0,1.9,dt);  %P,I,D
 Keybed = hits_keybed(brake_threshold);
 Joy = vrjoystick(1);
 Client = tcpclient(ip,1234);
-myArduino = arduino_data(Signal_Brake,F_motor);
 
 % Initialize all variables
 target_pos = 0; %this is the input position
@@ -61,7 +60,7 @@ F_wire = 0;
 F_lra = 0;
 t = 0.0;
              %[t; F_user; F_key; Pos_key; F_out; V_lra; F_lra; F_motor; F_brake; F_wire; Pos_tip; Pos_target; Vel_tip; F_tip; Signal_brake];
-Selection =   [1     1      0      1       0      0      0        1        1        0        1        1          0       0          0     ];
+Selection =   [1     1      0      1       1      0      0        1        1        1        1        1          1       1          0     ];
 Output = zeros(nnz(Selection),duration);   %plotting vectors
 ColorOrder  = lines(size(Output,1));
 
@@ -88,10 +87,6 @@ for i = 1:duration
     F_brake = Brake.step(Signal_brake,F_user,dt);
     F_wire = ternary(Signal_brake,F_brake,F_motor);
     
-    % Arduino setup
-    myArduino.motor_force();
-    myArduino.solenoid_status();
-    fsr = myArduino.force_sensor();
     
     % Finger current step
     [Pos_tip,Vel_tip,F_tip] = Finger.step(F_wire, F_lra, F_user,Signal_brake,dt);
