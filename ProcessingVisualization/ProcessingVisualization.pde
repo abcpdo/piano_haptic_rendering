@@ -14,6 +14,7 @@ void setup()  {
   strokeWeight(1);        //stroke width
   // Starts a myServer on port 1234
   myServer = new Server(this, 1234); 
+  finger = loadImage("finger.png");
 }
 
 void draw() {
@@ -28,7 +29,7 @@ void draw() {
     }
     Key = map(Key,0.04,-0.04,0,600);
     Tip = map(Tip,0.04,-0.04,0,600);
-    ellipse(200,Tip,5,5);
+    image(finger,200,Tip,5,5);
     line(200,Key,600,300);
   }
 }
